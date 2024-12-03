@@ -1,31 +1,120 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+from dataclasses import dataclass
+from typing import Dict, List, Tuple, Any, Union
+import numpy as np
+import statistics
 
-def describe_data(df: pd.DataFrame):
-    """
-    Prints basic descriptive statistics for the DataFrame.
+@dataclass
+class Descriptor:
+    """Class for describing real estate data."""
+    data: List[Dict[str, Any]]
 
-    :param df: DataFrame to describe.
-    """
-    print("Descriptive statistics:")
-    print(df.describe())
+    def none_ratio(self, columns: List[str] = "all") -> Dict[str, float]:
+        """Compute the ratio of None value per column.
+        If columns = "all", compute for all.
+        Validate that column names are correct. If not, raise an exception.
+        Return a dictionary with the key as the column name and value as the ratio of None values.
+        """
+        if columns == "all":
+            columns = self.data[0].keys()  # Use the keys (column names) from the first row
 
-def plot_correlation(df: pd.DataFrame, target: str):
-    """
-    Plots a correlation heatmap for the DataFrame using only numeric columns.
+        result = {}
+        for column in columns:
+            if column not in self.data[0]:
+                raise ValueError(f"Column '{column}' does not exist in the dataset.")
 
-    :param df: DataFrame to analyze.
-    :param target: Target column for correlation analysis.
-    """
-    # Select numeric columns only
-    numeric_df = df.select_dtypes(include=["float64", "int64"])
+            none_count = sum(1 for row in self.data if row.get(column) is None)
+            total_count = len(self.data)
+            result[column] = none_count / total_count
 
-    # Compute the correlation matrix
-    correlation = numeric_df.corr()
+        return result
 
-    # Plot the heatmap
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(correlation, annot=False, cmap="coolwarm")
-    plt.title(f"Correlation Heatmap with {target}")
-    plt.show()
+    def average(self, columns: List[str] = "all") -> Dict[str, float]:
+        """Compute the average value for numeric variables. Omit None values.
+        If columns = "all", compute for all numeric ones.
+        Validate that column names are correct and correspond to a numeric variable.
+        Return a dictionary with the key as the column name and value as the average.
+        """
+        if columns == "all":
+            columns = [col for col in self.data[0].keys() if isinstance(self.data[0][col], (int, float))]
+
+        result = {}
+        for column in columns:
+            if column not in self.data[0]:
+                raise ValueError(f"Column '{column}' does not exist in the dataset.")
+            
+            values = [row[column] for row in self.data if row.get(column) is not None]
+            if not values:
+                result[column] = None
+            else:
+                result[column] = sum(values) / len(values)
+        
+        return result
+
+    def median(self, columns: List[str] = "all") -> Dict[str, float]:
+        """Compute the median value for numeric variables. Omit None values.
+        If columns = "all", compute for all numeric ones.
+        Validate that column names are correct and correspond to a numeric variable.
+        Return a dictionary with the key as the column name and value as the median.
+        """
+        if columns == "all":
+            columns = [col for col in self.data[0].keys() if isinstance(self.data[0][col], (int, float))]
+
+        result = {}
+        for column in columns:
+            if column not in self.data[0]:
+                raise ValueError(f"Column '{column}' does not exist in the dataset.")
+
+            values = [row[column] for row in self.data if row.get(column) is not None]
+            if not values:
+                result[column] = None
+            else:
+                result[column] = statistics.median(values)
+        
+        return result
+
+    def percentile(self, columns: List[str] = "all", percentile: int = 50) -> Dict[str, float]:
+        """Compute the percentile value for numeric variables. Omit None values.
+        If columns = "all", compute for all numeric ones.
+        Validate that column names are correct and correspond to a numeric variable.
+        Return a dictionary with the key as the column name and value as the percentile.
+        """
+        if columns == "all":
+            columns = [col for col in self.data[0].keys() if isinstance(self.data[0][col], (int, float))]
+
+        result = {}
+        for column in columns:
+            if column not in self.data[0]:
+                raise ValueError(f"Column '{column}' does not exist in the dataset.")
+
+            values = [row[column] for row in self.data if row.get(column) is not None]
+            if not values:
+                result[column] = None
+            else:
+                result[column] = np.percentile(values, percentile)
+        
+        return result
+
+    def type_and_mode(self, columns: List[str] = "all") -> Dict[str, Union[Tuple[str, float], Tuple[str, str]]]:
+        """Compute the mode for variables. Omit None values.
+        If columns = "all", compute for all.
+        Validate that column names are correct. If not, raise an exception.
+        Return a dictionary with the key as the column name and value as a tuple of the variable type and the mode.
+        """
+        if columns == "all":
+            columns = self.data[0].keys()
+
+        result = {}
+        for column in columns:
+            if column not in self.data[0]:
+                raise ValueError(f"Column '{column}' does not exist in the dataset.")
+
+            values = [row[column] for row in self.data if row.get(column) is not None]
+            if not values:
+                result[column] = (None, None)
+            else:
+                # Calculate mode (most frequent value)
+                mode_value = statistics.mode(values)
+                column_type = type(values[0]).__name__  # Get the type of the column
+                result[column] = (column_type, mode_value)
+        
+        return result
