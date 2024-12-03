@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Real Estate Toolkit
 A Python toolkit for analyzing and simulating the real estate market.
 
@@ -11,6 +10,3 @@ A Python toolkit for analyzing and simulating the real estate market.
 To install the project, use:
 ```bash
 poetry install
-=======
-# real_estate_toolkit
->>>>>>> 2d554a8fc35de39bdaf0c3523b41c898a3cc26da
