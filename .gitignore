@@ -1,0 +1,12 @@
+# Ignore virtual environment
+.venv/
+
+# Ignore Python cache
+__pycache__/
+
+# Ignore temporary files created by some text editors
+*.swp
+*.bak
+
+# Ignore pytest cache
+.pytest_cache/
