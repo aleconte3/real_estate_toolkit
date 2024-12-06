@@ -1,8 +1,8 @@
 from enum import Enum, auto
 from dataclasses import dataclass
 from typing import Optional
-from src.real_estate_toolkit.agent_based_model.houses import House
-from src.real_estate_toolkit.agent_based_model.market import HousingMarket
+from real_estate_toolkit.agent_based_model.houses import House
+from real_estate_toolkit.agent_based_model.market import HousingMarket
 
 
 class Segment(Enum):

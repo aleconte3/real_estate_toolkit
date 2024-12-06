@@ -1,5 +1,5 @@
-from src.real_estate_toolkit.agent_based_model.houses import House, QualityScore
-from src.real_estate_toolkit.agent_based_model.market import HousingMarket
+from real_estate_toolkit.agent_based_model.houses import House, QualityScore
+from real_estate_toolkit.agent_based_model.market import HousingMarket
 
 def test_get_house_by_id():
     # Create sample houses

@@ -1,5 +1,5 @@
 from typing import List, Dict, Optional
-from src.real_estate_toolkit.agent_based_model.houses import House
+from real_estate_toolkit.agent_based_model.houses import House
 import statistics
 
 class HousingMarket:

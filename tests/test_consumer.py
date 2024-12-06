@@ -1,6 +1,6 @@
-from src.real_estate_toolkit.agent_based_model.consumers import Consumer, Segment
-from src.real_estate_toolkit.agent_based_model.houses import House
-from src.real_estate_toolkit.agent_based_model.market import HousingMarket
+from real_estate_toolkit.agent_based_model.consumers import Consumer, Segment
+from real_estate_toolkit.agent_based_model.houses import House
+from real_estate_toolkit.agent_based_model.market import HousingMarket
 
 
 def test_consumer_buy_house():
