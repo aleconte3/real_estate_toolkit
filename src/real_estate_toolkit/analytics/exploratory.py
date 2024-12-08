@@ -1,6 +1,6 @@
-from typing import List, Dict, Any, Optional
 import polars as pl
 import os
+from typing import List, Dict
 import plotly.express as px
 import plotly.graph_objects as go
 
@@ -165,8 +165,8 @@ class MarketAnalyzer:
         output_folder = "src/real_estate_toolkit/analytics/outputs"
         os.makedirs(output_folder, exist_ok=True)
 
-        boxplot_file_path = os.path.join(output_folder, "neighborhood_price_comparison.png")
-        fig.write_image(boxplot_file_path)
+        boxplot_file_path = os.path.join(output_folder, "neighborhood_price_comparison.html")
+        fig.write_html(boxplot_file_path)
         print(f"Neighborhood price comparison boxplot saved to {boxplot_file_path}")
 
         return neighborhood_stats  # Return neighborhood statistics DataFrame
@@ -191,8 +191,8 @@ class MarketAnalyzer:
         output_folder = "src/real_estate_toolkit/analytics/outputs"
         os.makedirs(output_folder, exist_ok=True)
 
-        heatmap_file_path = os.path.join(output_folder, "correlation_heatmap.png")
-        fig.write_image(heatmap_file_path)
+        heatmap_file_path = os.path.join(output_folder, "correlation_heatmap.html")
+        fig.write_html(heatmap_file_path)
         print(f"Correlation heatmap saved to {heatmap_file_path}")
 
     def create_scatter_plots(self) -> Dict[str, go.Figure]:
@@ -221,21 +221,21 @@ class MarketAnalyzer:
             self.real_state_clean_data.to_pandas(), x="GrLivArea", y="SalePrice", 
             title="Price vs Area", trendline="ols", color="OverallQual"
         )
-        scatter_plots["price_vs_area"].write_image("src/real_estate_toolkit/analytics/outputs/price_vs_area.png")
+        scatter_plots["price_vs_area"].write_html("src/real_estate_toolkit/analytics/outputs/price_vs_area.html")
 
         # Scatter plot for price vs year built
         scatter_plots["price_vs_year_built"] = px.scatter(
             self.real_state_clean_data.to_pandas(), x="YearBuilt", y="SalePrice", 
             title="Price vs Year Built", trendline="ols", color="OverallQual"
         )
-        scatter_plots["price_vs_year_built"].write_image("src/real_estate_toolkit/analytics/outputs/price_vs_year_built.png")
+        scatter_plots["price_vs_year_built"].write_html("src/real_estate_toolkit/analytics/outputs/price_vs_year_built.html")
 
         # Scatter plot for overall quality vs price
         scatter_plots["quality_vs_price"] = px.scatter(
             self.real_state_clean_data.to_pandas(), x="OverallQual", y="SalePrice", 
             title="Quality vs Price", trendline="ols"
         )
-        scatter_plots["quality_vs_price"].write_image("src/real_estate_toolkit/analytics/outputs/quality_vs_price.png")
+        scatter_plots["quality_vs_price"].write_html("src/real_estate_toolkit/analytics/outputs/quality_vs_price.html")
 
         return scatter_plots
 
