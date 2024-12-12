@@ -7,6 +7,8 @@ from real_estate_toolkit.ml_models.predictor import HousePricePredictor
 
 def is_valid_snake_case(string: str) -> bool:
     """Check if a given string is in valid snake_case."""
+    # This function ensures that the column names follow the snake_case convention,
+    # which is a widely accepted naming convention in Python for variables and functions.
     if not string:
         return False
     if not all(char.islower() or char.isdigit() or char == '_' for char in string):
@@ -19,41 +21,42 @@ def is_valid_snake_case(string: str) -> bool:
 
 
 def test_data_loading_and_cleaning():
-    """Test data loading and cleaning functionality"""
-    # Test data loading using Polars
+    """Test data loading and cleaning functionality."""
+    # This function ensures that the data is correctly loaded and cleaned before training the model.
+    # Path to the training dataset
     data_path = Path("/Users/aleconte/Documents/UNI/Upf/PROGRAMMING/real_estate_toolkit/data/train.csv")
     
-    # Load the data using Polars directly
+    # Load the data using Polars directly. Polars is chosen for its speed and efficiency in handling large datasets.
     df = pl.read_csv(data_path, separator=";", null_values=["None", "NA"])
 
-    # Remove 'MasVnrArea' column if it exists or handle it as string (Utf8)
+    # Handling the 'MasVnrArea' column. It is dropped if it exists or treated as a string if it is missing.
     if 'MasVnrArea' in df.columns:
-        df = df.drop('MasVnrArea')  # Drop the column if it's present
+        df = df.drop('MasVnrArea')  # Drop the column if it's present (it's not useful in model training)
         print("'MasVnrArea' column dropped.")
     else:
-        # Explicitly cast MasVnrArea to string if the column is not dropped
-        df = df.with_columns(pl.col("MasVnrArea").cast(pl.Utf8))  # This line must be indented
+        # If the column does not exist, we cast it to string type (some datasets may contain missing values represented as 'None' or 'NA')
+        df = df.with_columns(pl.col("MasVnrArea").cast(pl.Utf8))  # Explicitly cast MasVnrArea to string if the column is not dropped
         print("'MasVnrArea' column treated as string.")
 
-    
-
-    # Normalize column names (remove spaces, convert to lowercase, and make sure they are consistent)
+    # Normalize column names by stripping spaces and converting to lowercase to ensure consistency.
     normalized_columns = [col.strip().lower() for col in df.columns]
     
 
-    # Test column validation
+    # Column validation: check if all required columns are present.
+    # The following columns are essential for predicting house prices: 'id', 'saleprice', 'lotarea', 'yearbuilt', 'bedroomabvgr'
     required_columns = ["id", "saleprice", "lotarea", "yearbuilt", "bedroomabvgr"]
     missing_columns = [col for col in required_columns if col not in normalized_columns]
     
     if missing_columns:
         raise ValueError(f"Required columns missing from dataset: {', '.join(missing_columns)}")
 
-    # Continue with data cleaning
-    cleaner = Cleaner(df.to_dicts())  # Pass the data as a list of dicts to Cleaner
-    cleaner.rename_with_best_practices()
-    cleaned_data = cleaner.na_to_none()
+    # Proceed with data cleaning by using the Cleaner class.
+    # The Cleaner class will rename columns based on best practices and handle missing values.
+    cleaner = Cleaner(df.to_dicts())  # Pass the data as a list of dicts to Cleaner (Polars doesn't support pandas-like operations)
+    cleaner.rename_with_best_practices()  # Renames columns following best practices (snake_case, more descriptive)
+    cleaned_data = cleaner.na_to_none()  # Replace missing values with None
 
-    # Verify cleaning results
+    # After cleaning, verify that all column names are in snake_case and all values are valid types.
     assert all(is_valid_snake_case(key) for key in cleaned_data[0].keys()), "Column names should be in snake_case"
     assert all(val is None or isinstance(val, (str, int, float)) for row in cleaned_data for val in row.values()), \
         "Values should be None or basic types"
@@ -63,11 +66,14 @@ def test_data_loading_and_cleaning():
 
 def test_house_price_predictor():
     """Test the functionality of the HousePricePredictor class."""
-    # Paths to the datasets
+    # The HousePricePredictor class integrates data cleaning, feature preparation, model training, and forecasting.
+    # The paths to the datasets are specified for both the training and testing datasets.
     train_data_path = Path("/Users/aleconte/Documents/UNI/Upf/PROGRAMMING/real_estate_toolkit/data/train.csv")
     test_data_path = Path("/Users/aleconte/Documents/UNI/Upf/PROGRAMMING/real_estate_toolkit/data/test.csv")
-    # Initialize predictor
+    
+    # Initialize the HousePricePredictor
     predictor = HousePricePredictor(train_data_path=str(train_data_path), test_data_path=str(test_data_path))
+
     # Step 1: Test data cleaning
     print("Testing data cleaning...")
     try:
@@ -76,6 +82,7 @@ def test_house_price_predictor():
     except Exception as e:
         print(f"Data cleaning failed: {e}")
         return
+    
     # Step 2: Test feature preparation
     print("Testing feature preparation...")
     try:
@@ -84,6 +91,7 @@ def test_house_price_predictor():
     except Exception as e:
         print(f"Feature preparation failed: {e}")
         return
+    
     # Step 3: Test model training
     print("Testing model training...")
     try:
@@ -97,6 +105,7 @@ def test_house_price_predictor():
     except Exception as e:
         print(f"Model training failed: {e}")
         return
+    
     # Step 4: Test forecasting
     print("Testing forecasting...")
     try:
@@ -111,17 +120,18 @@ def main():
     """Main function to run all tests"""
     try:
         # Run all tests sequentially
-        cleaned_data = test_data_loading_and_cleaning()
-        test_house_price_predictor()
+        cleaned_data = test_data_loading_and_cleaning()  # First, test data loading and cleaning
+        test_house_price_predictor()  # Then, test the predictor functionality (data cleaning, feature prep, model training, etc.)
         print("All tests passed successfully!")
-        return 0
+        return 0  # If everything passes, return 0 (successful completion)
     except AssertionError as e:
-        print(f"Test failed: {str(e)}")
+        print(f"Test failed: {str(e)}")  # If an assertion fails, handle the error and return 1
         return 1
     except Exception as e:
-        print(f"Unexpected error: {str(e)}")
+        print(f"Unexpected error: {str(e)}")  # Handle any unexpected errors and return 2
         return 2
 
 
 if __name__ == "__main__":
+    # Call the main function when this script is run
     main()
