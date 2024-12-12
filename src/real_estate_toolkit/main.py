@@ -24,11 +24,16 @@ def test_data_loading_and_cleaning():
     data_path = Path("/Users/aleconte/Documents/UNI/Upf/PROGRAMMING/real_estate_toolkit/data/train.csv")
     
     # Load the data using Polars directly
-    df = pl.read_csv(data_path, separator=";")
+    df = pl.read_csv(data_path, separator=";", null_values=["None", "NA"])
 
-    # Remove 'MasVnrArea' column if it exists
+    # Remove 'MasVnrArea' column if it exists or handle it as string (Utf8)
     if 'MasVnrArea' in df.columns:
-        df = df.drop('MasVnrArea')  # Remove the 'MasVnrArea' column if it's present
+        df = df.drop('MasVnrArea')  # Drop the column if it's present
+        print("'MasVnrArea' column dropped.")
+    else:
+        # Explicitly cast MasVnrArea to string if the column is not dropped
+        df = df.with_columns(pl.col("MasVnrArea").cast(pl.Utf8))  # This line must be indented
+        print("'MasVnrArea' column treated as string.")
 
     # Print columns and data types for debugging
     print("Columns in the dataset:", df.columns)
@@ -56,8 +61,6 @@ def test_data_loading_and_cleaning():
         "Values should be None or basic types"
     
     return cleaned_data
-
-
 
 
 def test_house_price_predictor():
@@ -99,7 +102,7 @@ def test_house_price_predictor():
     # Step 4: Test forecasting
     print("Testing forecasting...")
     try:
-        predictor.forecast_sales_price(model_type="Linear Regression")
+        predictor.forecast_sales_price(model_type="LinearRegression")
         print("Forecasting passed!")
     except Exception as e:
         print(f"Forecasting failed: {e}")
