@@ -35,13 +35,11 @@ def test_data_loading_and_cleaning():
         df = df.with_columns(pl.col("MasVnrArea").cast(pl.Utf8))  # This line must be indented
         print("'MasVnrArea' column treated as string.")
 
-    # Print columns and data types for debugging
-    print("Columns in the dataset:", df.columns)
-    print("Data types in the dataset:", df.dtypes)
+    
 
     # Normalize column names (remove spaces, convert to lowercase, and make sure they are consistent)
     normalized_columns = [col.strip().lower() for col in df.columns]
-    print("Normalized columns:", normalized_columns)
+    
 
     # Test column validation
     required_columns = ["id", "saleprice", "lotarea", "yearbuilt", "bedroomabvgr"]

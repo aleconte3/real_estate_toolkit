@@ -52,17 +52,20 @@ class HousePricePredictor:
                 self.train_data = self.train_data.with_columns(
                     pl.col(col).fill_null(mode_value).alias(col)
                 )
-                print(f"Filled missing values in {col} with mode value: {mode_value}")
+                # Commenting out print statements to reduce unnecessary output
+                # print(f"Filled missing values in {col} with mode value: {mode_value}")
 
         for col, mode_value in mode_values.items():
             if col in self.test_data.columns:
                 self.test_data = self.test_data.with_columns(
                     pl.col(col).fill_null(mode_value).alias(col)
                 )
-                print(f"Filled missing values in {col} with mode value: {mode_value}")
+                # Commenting out print statements to reduce unnecessary output
+                # print(f"Filled missing values in {col} with mode value: {mode_value}")
 
-        print(f"Remaining rows in train data: {self.train_data.height}")
-        print(f"Remaining rows in test data: {self.test_data.height}")
+        # Commenting out these print statements to avoid outputting rows count
+        # print(f"Remaining rows in train data: {self.train_data.height}")
+        # print(f"Remaining rows in test data: {self.test_data.height}")
 
     def prepare_features(self, target_column: str = 'SalePrice', selected_predictors: List[str] = None):
         """
@@ -82,8 +85,9 @@ class HousePricePredictor:
         y_test = None  # Test data does not contain SalePrice
 
         print("Features prepared successfully.")
-        print(f"X_train shape: {X_train.shape}, y_train shape: {y_train.shape}")
-        print(f"X_test shape: {X_test.shape}")
+        # Commenting out the print statement to avoid excessive output
+        # print(f"X_train shape: {X_train.shape}, y_train shape: {y_train.shape}")
+        # print(f"X_test shape: {X_test.shape}")
 
         # Preprocessing: Handle categorical and numerical columns separately
         # Categorical columns: apply OneHotEncoder
@@ -199,29 +203,4 @@ class HousePricePredictor:
             # Prepare the results for submission
             submission = self.test_data.select("Id").to_pandas()  # Get IDs from the test set
             submission["SalePrice"] = y_pred
-            
-            # Save the submission to CSV
-            output_folder = "src/real_estate_toolkit/ml_models/outputs"
-            os.makedirs(output_folder, exist_ok=True)
-            submission_file_path = os.path.join(output_folder, "submission.csv")
-            submission.to_csv(submission_file_path, index=False)
-            
-            print(f"Predictions saved to {submission_file_path}")
-        else:
-            print(f"Model type {model_type} not found in results.")
-
-# Example paths to your datasets
-train_data_path = "/Users/aleconte/Documents/UNI/Upf/PROGRAMMING/real_estate_toolkit/data/train.csv"
-test_data_path = "/Users/aleconte/Documents/UNI/Upf/PROGRAMMING/real_estate_toolkit/data/test.csv"
-
-# Create the HousePricePredictor object
-predictor = HousePricePredictor(train_data_path, test_data_path)
-
-# Call the clean_data function
-predictor.clean_data()
-
-# Call the prepare_features function
-X_train, X_test, y_train, y_test = predictor.prepare_features()
-
-# Train models and make predictions
-predictor.forecast_sales_price()
+        
